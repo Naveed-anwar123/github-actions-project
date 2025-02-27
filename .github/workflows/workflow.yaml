@@ -1,0 +1,23 @@
+name: node app workflow
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - feature/*
+jobs:
+  unit-testing:
+    runs-on: ubunut-latest
+    name: unit-testing
+    steps:
+      - name: Repository Checkout # download repo
+        uses: actions/checkout@v4 
+      - name: Setup Node
+        uses: actions/setup-node@v4 # install node
+        with:
+          node-version: 18
+      - name: Install dependencies # install dependecies
+        run: npm instal
+      - name: Run Tests # run the unit tests
+        run: npm test
+        
