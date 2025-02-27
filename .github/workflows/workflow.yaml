@@ -5,8 +5,7 @@ on:
     branches:
       - main
       - feature/*
-
-env:
+env: # these are setup at the environment in the runner
   MONGO_URI: mongodb+srv://supercluster.d83jj.mongodb.net/superData
   MONGO_USERNAME: ${{ vars.MONGO_USERNAME }} # access repository level variables
   MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }} # access repository level secrets
@@ -25,4 +24,9 @@ jobs:
         run: npm instal
       - name: Run Tests # run the unit tests
         run: npm test
-        
+      - name: Archive test result
+        uses: actions/upload-artifact@v3
+        with:
+          name: Mocha-Test-Result
+          path: test-results.xml
+      
