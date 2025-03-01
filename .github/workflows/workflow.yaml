@@ -121,3 +121,11 @@ jobs:
           
           docker container ls
           wget -q -O - localhost:3000/live | grep live
+      
+      - name: Docker Push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true # push image to docker hub
+          tags: ${{ vars.DOCKERHUB_USERNAME}}/solar-system:${{github.sha}}
+      
