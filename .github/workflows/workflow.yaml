@@ -23,7 +23,7 @@ jobs:
     runs-on: ${{ matrix.operating_system }}
     services:
       mongo-db:
-        image: siddharth6/mongo-db:non-prod
+        image: siddharth67/mongo-db:non-prod
         ports: 
           - 27017:27017
     env: # these are setup at the environment in the runner
