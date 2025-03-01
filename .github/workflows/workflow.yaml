@@ -31,9 +31,9 @@ jobs:
         run: npm install
       - name: Run Tests # run the unit tests
         run: npm test
-      - name: Clean up old artifacts
-        run: |
-          rm -rf test-results.xml
+      # - name: Clean up old artifacts
+      #   run: |
+      #     rm -rf test-results.xml
       - name: Archive test result
         uses: actions/upload-artifact@v4
         with:
