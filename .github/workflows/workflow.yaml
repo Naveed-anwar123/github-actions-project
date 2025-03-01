@@ -30,13 +30,11 @@ jobs:
       - name: Install dependencies # install dependecies
         run: npm install
       - name: Run Tests # run the unit tests
-        run: npm test
-      # - name: Clean up old artifacts
-      #   run: |
-      #     rm -rf test-results.xml
-      - name: Archive test result for ${{github.run_id}} 
+        run: |
+          npm test
+          ls -ltrh
+      - name: Archive test result for${{ matrix.operating_system }}-${{ strategy.job-index }}
         uses: actions/upload-artifact@v4
         with:
-          name: Mocha-Test-Result-${{github.run_id}} # name of the downloaded file. name.zip 
+          name: Result-${{ matrix.operating_system }}-${{ strategy.job-index }} # name of the downloaded file. name.zip 
           path: test-results.xml # where the file is present on the runner vm
-      
