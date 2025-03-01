@@ -69,15 +69,29 @@ jobs:
         nodejs_version: [18]
         operating_system: [ubuntu-latest]
     runs-on: ${{ matrix.operating_system }}
+
+    container: # RUNS the job inside a container on the runner virtual machine
+      image: node:18
+    
+    services:
+      mongo-db:
+        image: siddharth67/mongo-db:non-prod
+        options:
+          --name mongo
+        env: # these are setup at the environment in the runner
+          MONGO_URI: mongodb://mongo:27017/superData # let say this is prod database
+          MONGO_USERNAME: non-prod-user
+          MONGO_PASSWORD: non-prod-password
+
     name: code coverage 
     steps:
       - name: Repository Checkout # download repo
         uses: actions/checkout@v4 
 
-      - name: Setup Node 18
-        uses: actions/setup-node@v4 # install node
-        with:
-          node-version: 18
+      # - name: Setup Node 18
+      #   uses: actions/setup-node@v4 # install node
+      #   with:
+      #     node-version: 18
       
       - name: Cache Node Dependencies
         uses: actions/cache@v3
