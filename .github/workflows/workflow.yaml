@@ -6,10 +6,11 @@ on:
       - main
       - feature/*
 env: # these are setup at the environment in the runner
-  MONGO_URI: mongodb+srv://supercluster.d83jj.mongodb.net/superData
+  MONGO_URI: mongodb+srv://supercluster.d83jj.mongodb.net/superData # let say this is prod database
   MONGO_USERNAME: ${{ vars.MONGO_USERNAME }} # access repository level variables
   MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }} # access repository level secrets
   REPO: naveed-anwar123
+
 jobs:
   unit-testing:
     strategy:
@@ -20,6 +21,15 @@ jobs:
           - nodejs_version: 18
             operating_system: macos-latest
     runs-on: ${{ matrix.operating_system }}
+    services:
+      mongo-db:
+        image: siddharth6/mongo-db:non-prod
+        ports: 
+          - 27017:27017
+    env: # these are setup at the environment in the runner
+      MONGO_URI: mongodb://localhost:27017/superData # let say this is prod database
+      MONGO_USERNAME: non-prod-user
+      MONGO_PASSWORD: non-prod-password
     name: unit-testing
     steps:
       - name: Repository Checkout # download repo
