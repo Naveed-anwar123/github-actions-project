@@ -78,10 +78,10 @@ jobs:
         image: siddharth67/mongo-db:non-prod
         options:
           --name mongo
-        env: # these are setup at the environment in the runner
-          MONGO_URI: mongodb://mongo:27017/superData # let say this is prod database
-          MONGO_USERNAME: non-prod-user
-          MONGO_PASSWORD: non-prod-password
+    env: # these are setup at the environment in the runner
+      MONGO_URI: mongodb://mongo:27017/superData # let say this is prod database
+      MONGO_USERNAME: non-prod-user
+      MONGO_PASSWORD: non-prod-password
 
     name: code coverage 
     steps:
