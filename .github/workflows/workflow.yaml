@@ -39,7 +39,7 @@ jobs:
           ls -ltrh
 
       - name: Archive test result for ${{ matrix.operating_system }}-${{ strategy.job-index }}
-        if: steps.nodejs_unit_test_id.outcome == 'failure' || steps.nodejs_unit_test_id.outcome == 'success'
+        if: failure() && (steps.nodejs_unit_test_id.outcome == 'failure' || steps.nodejs_unit_test_id.outcome == 'success')
         uses: actions/upload-artifact@v4
         with:
           name: Result-${{ matrix.operating_system }}-${{ strategy.job-index }} # to generate random names
