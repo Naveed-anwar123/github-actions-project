@@ -174,13 +174,13 @@ jobs:
         uses: actions/checkout@v4 
     
       - name: Install kubectl cli
-        uses: actions/@setup-kubectl@v3
+        uses: azure/setup-kubectl@v4
         with:
           version: 'v1.26.0'
+        id: install
 
       - name: Fetch kubectl cluster information
         run: | 
           kubectl version --short -o yaml
           echo -------------------------------
           kubectl get nodes
-          
