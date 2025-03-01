@@ -9,6 +9,7 @@ env: # these are setup at the environment in the runner
   MONGO_URI: mongodb+srv://supercluster.d83jj.mongodb.net/superData
   MONGO_USERNAME: ${{ vars.MONGO_USERNAME }} # access repository level variables
   MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }} # access repository level secrets
+  REPO: naveed-anwar123
 jobs:
   unit-testing:
     strategy:
@@ -136,4 +137,4 @@ jobs:
           push: true # push image to docker hub
           tags: | 
             ${{ vars.DOCKERHUB_USERNAME}}/solar-system:${{github.sha}}
-            ghcr.io/${{github.repository_owner}}/solar-system:${{github.sha}}
+            ghcr.io/${{env.REPO}}/solar-system:${{github.sha}}
