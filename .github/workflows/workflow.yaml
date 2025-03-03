@@ -167,7 +167,7 @@ jobs:
             ghcr.io/${{env.REPO}}/solar-system:${{github.sha}}
   
   dev-deploy:
-    #needs: docker
+    needs: docker
     runs-on: ubuntu-latest
     steps:
       - name: Repository Checkout # download repo
@@ -223,6 +223,6 @@ jobs:
 
       - name: Deploy to Dev ENV
         run: | 
-          kubectl apply kubernetes/development/*.yaml
+          kubectl apply -f kubernetes/development/*.yaml
       
       
