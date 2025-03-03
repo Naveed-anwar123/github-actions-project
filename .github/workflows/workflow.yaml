@@ -178,9 +178,15 @@ jobs:
         with:
           version: 'v1.26.0'
         id: install
+      - name: Set kubeconfig
+        uses: azure/k8s-set-context@v4
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBECONFIG }}
 
       - name: Fetch kubectl cluster information
         run: | 
-          kubectl version --short -o yaml
+          kubectl version -o yaml
           echo -------------------------------
           kubectl get nodes
+          echo -------------------------------  
