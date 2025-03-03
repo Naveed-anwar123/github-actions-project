@@ -12,162 +12,162 @@ env: # these are setup at the environment in the runner
   REPO: naveed-anwar123
 
 jobs:
-  # unit-testing:
-  #   strategy:
-  #     matrix:
-  #       nodejs_version: [18]
-  #       operating_system: [ubuntu-latest, macos-latest]
-  #       exclude:
-  #         - nodejs_version: 18
-  #           operating_system: macos-latest
-  #   runs-on: ${{ matrix.operating_system }}
-  #   services:
-  #     mongo-db:
-  #       image: siddharth67/mongo-db:non-prod
-  #       ports: 
-  #         - 27017:27017
-  #   env: # these are setup at the environment in the runner
-  #     MONGO_URI: mongodb://localhost:27017/superData # let say this is prod database
-  #     MONGO_USERNAME: non-prod-user
-  #     MONGO_PASSWORD: non-prod-password
-  #   name: unit-testing
-  #   steps:
-  #     - name: Repository Checkout # download repo
-  #       uses: actions/checkout@v4 
+  unit-testing:
+    strategy:
+      matrix:
+        nodejs_version: [18]
+        operating_system: [ubuntu-latest, macos-latest]
+        exclude:
+          - nodejs_version: 18
+            operating_system: macos-latest
+    runs-on: ${{ matrix.operating_system }}
+    services:
+      mongo-db:
+        image: siddharth67/mongo-db:non-prod
+        ports: 
+          - 27017:27017
+    env: # these are setup at the environment in the runner
+      MONGO_URI: mongodb://localhost:27017/superData # let say this is prod database
+      MONGO_USERNAME: non-prod-user
+      MONGO_PASSWORD: non-prod-password
+    name: unit-testing
+    steps:
+      - name: Repository Checkout # download repo
+        uses: actions/checkout@v4 
 
-  #     - name: Setup Node
-  #       uses: actions/setup-node@v4 # install node
-  #       with:
-  #         node-version: ${{ matrix.nodejs_version }}
+      - name: Setup Node
+        uses: actions/setup-node@v4 # install node
+        with:
+          node-version: ${{ matrix.nodejs_version }}
       
-  #     - name: Cache Node Dependencies
-  #       uses: actions/cache@v3
-  #       with:
-  #         path: node_modules # where the dependencies are installed
-  #         key: ${{runner.os}}-node-modules-${{hashFiles('package-lock.json')}} # unique key to create and load cache
+      - name: Cache Node Dependencies
+        uses: actions/cache@v3
+        with:
+          path: node_modules # where the dependencies are installed
+          key: ${{runner.os}}-node-modules-${{hashFiles('package-lock.json')}} # unique key to create and load cache
           
-  #     - name: Install dependencies # install dependecies
-  #       run: npm install
+      - name: Install dependencies # install dependecies
+        run: npm install
 
-  #     - name: Run Tests # run the unit tests
-  #       id: nodejs_unit_test_id # give a unique id id
-  #       run: |
-  #         npm test
-  #         ls -ltrh
+      - name: Run Tests # run the unit tests
+        id: nodejs_unit_test_id # give a unique id id
+        run: |
+          npm test
+          ls -ltrh
 
-  #     - name: Archive test result for ${{ matrix.operating_system }}-${{ strategy.job-index }}
-  #       #if: failure() && (steps.nodejs_unit_test_id.outcome == 'failure' || steps.nodejs_unit_test_id.outcome == 'success')
-  #       if: always()
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: Result-${{ matrix.operating_system }}-${{ strategy.job-index }} # to generate random names
-  #         path: test-results.xml # where the file is present on the runner vm
+      - name: Archive test result for ${{ matrix.operating_system }}-${{ strategy.job-index }}
+        #if: failure() && (steps.nodejs_unit_test_id.outcome == 'failure' || steps.nodejs_unit_test_id.outcome == 'success')
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Result-${{ matrix.operating_system }}-${{ strategy.job-index }} # to generate random names
+          path: test-results.xml # where the file is present on the runner vm
 
-  # code-coverage: 
-  #   strategy:
-  #     matrix:
-  #       nodejs_version: [18]
-  #       operating_system: [ubuntu-latest]
-  #   runs-on: ${{ matrix.operating_system }}
+  code-coverage: 
+    strategy:
+      matrix:
+        nodejs_version: [18]
+        operating_system: [ubuntu-latest]
+    runs-on: ${{ matrix.operating_system }}
 
-  #   container: # RUNS the job inside a container on the runner virtual machine
-  #     image: node:18
+    container: # RUNS the job inside a container on the runner virtual machine
+      image: node:18
     
-  #   services:
-  #     mongo-db:
-  #       image: siddharth67/mongo-db:non-prod
-  #       options:
-  #         --name mongo
-  #   env: # these are setup at the environment in the runner
-  #     MONGO_URI: mongodb://mongo:27017/superData # let say this is prod database
-  #     MONGO_USERNAME: non-prod-user
-  #     MONGO_PASSWORD: non-prod-password
+    services:
+      mongo-db:
+        image: siddharth67/mongo-db:non-prod
+        options:
+          --name mongo
+    env: # these are setup at the environment in the runner
+      MONGO_URI: mongodb://mongo:27017/superData # let say this is prod database
+      MONGO_USERNAME: non-prod-user
+      MONGO_PASSWORD: non-prod-password
 
-  #   name: code coverage 
-  #   steps:
-  #     - name: Repository Checkout # download repo
-  #       uses: actions/checkout@v4 
+    name: code coverage 
+    steps:
+      - name: Repository Checkout # download repo
+        uses: actions/checkout@v4 
 
-  #     # - name: Setup Node 18
-  #     #   uses: actions/setup-node@v4 # install node
-  #     #   with:
-  #     #     node-version: 18
+      # - name: Setup Node 18
+      #   uses: actions/setup-node@v4 # install node
+      #   with:
+      #     node-version: 18
       
-  #     - name: Cache Node Dependencies
-  #       uses: actions/cache@v3
-  #       with:
-  #         path: node_modules # where the dependencies are installed
-  #         key: ${{runner.os}}-node-modules-${{hashFiles('package-lock.json')}} # unique key to create and load cache
+      - name: Cache Node Dependencies
+        uses: actions/cache@v3
+        with:
+          path: node_modules # where the dependencies are installed
+          key: ${{runner.os}}-node-modules-${{hashFiles('package-lock.json')}} # unique key to create and load cache
           
-  #     - name: Install dependencies # install dependecies
-  #       run: npm install
+      - name: Install dependencies # install dependecies
+        run: npm install
 
-  #     - name: Run Coverage # run the unit tests
-  #       run: npm run coverage
-  #       continue-on-error: true
+      - name: Run Coverage # run the unit tests
+        run: npm run coverage
+        continue-on-error: true
 
-  #     - name: Code Coverage Results
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: Code-Coverage-${{ matrix.operating_system }}-${{ strategy.job-index }} # to generate random names
-  #         path: coverage # where the file is present on the runner vm
-  #         retention-days: 5
+      - name: Code Coverage Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Code-Coverage-${{ matrix.operating_system }}-${{ strategy.job-index }} # to generate random names
+          path: coverage # where the file is present on the runner vm
+          retention-days: 5
   
-  # docker:
-  #   name: Containerization job
-  #   runs-on: ubuntu-latest
-  #   needs: [code-coverage, unit-testing]
-  #   permissions: # add permissions for the GITHUB_TOKENs
-  #     packages: write
-  #     contents: read
-  #   steps:
-  #     - name: Checkout Repository
-  #       uses: actions/checkout@v4
+  docker:
+    name: Containerization job
+    runs-on: ubuntu-latest
+    needs: [code-coverage, unit-testing]
+    permissions: # add permissions for the GITHUB_TOKENs
+      packages: write
+      contents: read
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
       
-  #     - name: Login to Docker Hub
-  #       uses: docker/login-action@v3
-  #       with:
-  #         username: ${{ vars.DOCKERHUB_USERNAME }}
-  #         password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
       
-  #     - name: Login to GITHUB Registry
-  #       uses: docker/login-action@v3
-  #       with:
-  #         registry: ghcr.io
-  #         username: ${{ github.repository_owner }}
-  #         password: ${{ secrets.GITHUB_TOKEN }} # at the start of each job, github generates this token, as soon as job finishes, this token expires, we need to define permissions at the job level
+      - name: Login to GITHUB Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }} # at the start of each job, github generates this token, as soon as job finishes, this token expires, we need to define permissions at the job level
 
-  #     - name: Build and push
-  #       uses: docker/build-push-action@v6
-  #       with:
-  #         context: . # Path where we have the docker file is
-  #         push: false
-  #         tags: ${{ vars.DOCKERHUB_USERNAME}}/solar-system:${{github.sha}}
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: . # Path where we have the docker file is
+          push: false
+          tags: ${{ vars.DOCKERHUB_USERNAME}}/solar-system:${{github.sha}}
 
-  #     - name: Docker Image Testing
-  #       run: |
-  #         docker images
-  #         docker run --name solar-system-app -d \
-  #           -p 3000:3000 \
-  #           -e MONGO_URI=$MONGO_URI \
-  #           -e MONGO_USERNAME=$MONGO_USERNAME \
-  #           -e MONGO_PASSWORD=$MONGO_PASSWORD \
-  #           ${{ vars.DOCKERHUB_USERNAME}}/solar-system:${{github.sha}}
+      - name: Docker Image Testing
+        run: |
+          docker images
+          docker run --name solar-system-app -d \
+            -p 3000:3000 \
+            -e MONGO_URI=$MONGO_URI \
+            -e MONGO_USERNAME=$MONGO_USERNAME \
+            -e MONGO_PASSWORD=$MONGO_PASSWORD \
+            ${{ vars.DOCKERHUB_USERNAME}}/solar-system:${{github.sha}}
           
-  #         docker container ls
-  #         wget -q -O - localhost:3000/live | grep live
+          docker container ls
+          wget -q -O - localhost:3000/live | grep live
       
-  #     - name: Container Registry Push
-  #       uses: docker/build-push-action@v6
-  #       with:
-  #         context: .
-  #         push: true # push image to docker hub
-  #         tags: | 
-  #           ${{ vars.DOCKERHUB_USERNAME}}/solar-system:${{github.sha}}
-  #           ghcr.io/${{env.REPO}}/solar-system:${{github.sha}}
+      - name: Container Registry Push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true # push image to docker hub
+          tags: | 
+            ${{ vars.DOCKERHUB_USERNAME}}/solar-system:${{github.sha}}
+            ghcr.io/${{env.REPO}}/solar-system:${{github.sha}}
   
   dev-deploy:
-    #needs: docker
+    needs: docker
     runs-on: ubuntu-latest
     steps:
       - name: Repository Checkout # download repo
