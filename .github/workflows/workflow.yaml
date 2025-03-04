@@ -224,5 +224,3 @@ jobs:
       - name: Deploy to Dev ENV
         run: | 
           kubectl apply -f kubernetes/development
-      
-      
