@@ -210,6 +210,10 @@ jobs:
       - name: Check files
         run: | 
           cat kubernetes/development/*.yaml
+          
+      - name: Create namespace
+        run: | 
+          kubectl create namespace development
 
       - name: Create MongoDB Secret
         run: |
@@ -224,3 +228,10 @@ jobs:
       - name: Deploy to Dev ENV
         run: | 
           kubectl apply -f kubernetes/development
+      
+      - name: Create Nginx Ingress Controller
+        run: | 
+          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.3.0/deploy/static/provider/cloud/deploy.yaml
+          kubectl get service ingress-nginx-controller --namespace=ingress-nginx
+      
+      
