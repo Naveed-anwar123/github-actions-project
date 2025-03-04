@@ -191,10 +191,18 @@ jobs:
           kubectl get nodes
           echo -------------------------------  
       
+      - name: Create namespaces
+        run: |
+          kubectl create namespace development,ingress-nginx
+      
+      - name: Create Nginx Ingress Controller
+        run: |
+          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.3.0/deploy/static/provider/cloud/deploy.yaml
+      
       - name: Get Ingress External IP and save into GITHUB environment variable
         run: | # how to save any variable in github environment
             echo "INGRESS_IP=$(kubectl get svc ingress-nginx-controller --namespace=ingress-nginx -o=jsonpath='{.status.loadBalancer.ingress[0].ip}')" >> "$GITHUB_ENV"
-
+      
       - name: Replace Tokens in manifest files
         uses: cschleiden/replace-tokens@v1
         with:
@@ -210,11 +218,7 @@ jobs:
       - name: Check files
         run: | 
           cat kubernetes/development/*.yaml
-          
-      - name: Create namespace
-        run: | 
-          kubectl create namespace development
-
+      
       - name: Create MongoDB Secret
         run: |
           kubectl -n ${{vars.NAMESPACE}} create secret generic mongo-db-creds \
@@ -229,9 +233,6 @@ jobs:
         run: | 
           kubectl apply -f kubernetes/development
       
-      - name: Create Nginx Ingress Controller
-        run: | 
-          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.3.0/deploy/static/provider/cloud/deploy.yaml
-          kubectl get service ingress-nginx-controller --namespace=ingress-nginx
+
       
       
