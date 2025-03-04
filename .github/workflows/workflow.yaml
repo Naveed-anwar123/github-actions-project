@@ -342,7 +342,7 @@ jobs:
   prod-integration-testing:
     name: Prod Integration Testing
     runs-on: ubuntu-latest
-    needs: dev-deploy
+    needs: prod-deploy
     steps:
       - name: Integration Testing of URL
         env:
