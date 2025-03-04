@@ -240,7 +240,7 @@ jobs:
       - name: Set Ingress URL
         id: ingress-step
         run: |
-          echo "APP_URL=$(get ingress solar-system -o jsonpath='{.spec.rules[*].host}' -n development)" >> "$GITHUB_ENV"
+          echo "APP_URL=$(kubectl get ingress solar-system -o jsonpath='{.spec.rules[*].host}' -n development)" >> "$GITHUB_ENV"
 
 
   integration-testing:
