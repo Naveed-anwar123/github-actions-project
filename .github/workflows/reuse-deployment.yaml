@@ -62,7 +62,7 @@ jobs:
         with:
           tokenPrefix: '${' # ${NAMESPACE} will be replaced with development
           tokenSuffix: '}'
-          files: '[${{inputs.manifest-dir}}*.yaml]'
+          files: '["${{inputs.manifest-dir}}*.yaml"]'
         env:
           NAMESPACE: ${{vars.NAMESPACE}}
           REPLICAS: ${{vars.REPLICAS}}
