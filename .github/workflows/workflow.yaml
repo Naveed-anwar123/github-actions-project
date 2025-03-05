@@ -169,83 +169,8 @@ jobs:
   dev-deploy:
     if: contains(github.ref, 'feature/')
     needs: docker
-    runs-on: ubuntu-latest
-    environment:
-      name: development
-      url: https://${{ steps.ingress-step.outputs.APP_URL }}
-    outputs:
-      APP_URL: ${{ steps.ingress-step.outputs.APP_URL }}
-    steps:
-      - name: Repository Checkout # download repo
-        uses: actions/checkout@v4 
+    uses: .github/workflows/reuse-deployment.yaml
     
-      - name: Install kubectl cli
-        uses: azure/setup-kubectl@v4
-        with:
-          version: 'v1.26.0'
-        id: install
-      - name: Set kubeconfig
-        uses: azure/k8s-set-context@v4
-        with:
-          method: kubeconfig
-          kubeconfig: ${{ secrets.KUBECONFIG }}
-
-      - name: Fetch kubectl cluster information
-        run: | 
-          kubectl version -o yaml
-          echo -------------------------------
-          kubectl get nodes
-          echo -------------------------------  
-      
-      # - name: Create namespaces
-      #   run: |
-      #     kubectl create namespace development
-      #     kubectl create namespace ingress-nginx
-
-      - name: Create Nginx Ingress Controller
-        run: |
-          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.3.0/deploy/static/provider/cloud/deploy.yaml
-          sleep 30s
-
-      - name: Get Ingress External IP and save into GITHUB environment variable
-        run: | # how to save any variable in github environment
-            echo "INGRESS_IP=$(kubectl get svc ingress-nginx-controller --namespace=ingress-nginx -o=jsonpath='{.status.loadBalancer.ingress[0].ip}')" >> "$GITHUB_ENV"
-
-      - name: Replace Tokens in manifest files
-        uses: cschleiden/replace-tokens@v1
-        with:
-          tokenPrefix: '${' # ${NAMESPACE} will be replaced with development
-          tokenSuffix: '}'
-          files: '["kubernetes/development/*.yaml"]'
-        env:
-          NAMESPACE: ${{vars.NAMESPACE}}
-          REPLICAS: ${{vars.REPLICAS}}
-          K8S_IMAGE:  ${{ vars.DOCKERHUB_USERNAME}}/solar-system:${{github.sha}}
-          INGRESS_IP: ${{env.INGRESS_IP}}
-      
-      - name: Check files
-        run: | 
-          cat kubernetes/development/*.yaml
-      
-      - name: Create MongoDB Secret
-        run: |
-          kubectl -n ${{vars.NAMESPACE}} create secret generic mongo-db-creds \
-          --from-literal=MONGO_URI=${{ env.MONGO_URI }} \
-          --from-literal=MONGO_PASSWORD=${{ env.MONGO_PASSWORD }} \
-          --from-literal=MONGO_USERNAME=${{ env.MONGO_USERNAME }} \
-          --save-config \
-          --dry-run=client \
-          -o yaml | kubectl apply -f -
-
-      - name: Deploy to Dev ENV
-        run: | 
-          kubectl apply -f kubernetes/development
-
-      - name: Set Ingress URL
-        id: ingress-step
-        run: |
-          APP_URL=$(kubectl get ingress solar-system -o jsonpath='{.spec.rules[*].host}' -n development)
-          echo "APP_URL=$APP_URL" >> "$GITHUB_OUTPUT"
 
   dev-integration-testing:
     if: contains(github.ref, 'feature/')
@@ -264,83 +189,7 @@ jobs:
   prod-deploy:
     if: github.ref == 'refs/heads/main'
     needs: docker
-    runs-on: ubuntu-latest
-    environment:
-      name: production
-      url: https://${{ steps.ingress-step.outputs.APP_URL }}
-    outputs:
-      APP_URL: ${{ steps.ingress-step.outputs.APP_URL }}
-    steps:
-      - name: Repository Checkout # download repo
-        uses: actions/checkout@v4 
-    
-      - name: Install kubectl cli
-        uses: azure/setup-kubectl@v4
-        with:
-          version: 'v1.26.0'
-        id: install
-      - name: Set kubeconfig
-        uses: azure/k8s-set-context@v4
-        with:
-          method: kubeconfig
-          kubeconfig: ${{ secrets.KUBECONFIG }}
-
-      - name: Fetch kubectl cluster information
-        run: | 
-          kubectl version -o yaml
-          echo -------------------------------
-          kubectl get nodes
-          echo -------------------------------  
-      
-      # - name: Create namespaces
-      #   run: |
-      #     kubectl create namespace development
-      #     kubectl create namespace ingress-nginx
-
-      - name: Create Nginx Ingress Controller
-        run: |
-          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.3.0/deploy/static/provider/cloud/deploy.yaml
-          sleep 30s
-
-      - name: Get Ingress External IP and save into GITHUB environment variable
-        run: | # how to save any variable in github environment
-            echo "INGRESS_IP=$(kubectl get svc ingress-nginx-controller --namespace=ingress-nginx -o=jsonpath='{.status.loadBalancer.ingress[0].ip}')" >> "$GITHUB_ENV"
-
-      - name: Replace Tokens in manifest files
-        uses: cschleiden/replace-tokens@v1
-        with:
-          tokenPrefix: '${' # ${NAMESPACE} will be replaced with development
-          tokenSuffix: '}'
-          files: '["kubernetes/production/*.yaml"]'
-        env:
-          NAMESPACE: ${{vars.NAMESPACE}}
-          REPLICAS: ${{vars.REPLICAS}}
-          K8S_IMAGE:  ${{ vars.DOCKERHUB_USERNAME}}/solar-system:${{github.sha}}
-          INGRESS_IP: ${{env.INGRESS_IP}}
-      
-      - name: Check files
-        run: | 
-          cat kubernetes/production/*.yaml
-      
-      - name: Create MongoDB Secret
-        run: |
-          kubectl -n ${{vars.NAMESPACE}} create secret generic mongo-db-creds \
-          --from-literal=MONGO_URI=${{ env.MONGO_URI }} \
-          --from-literal=MONGO_PASSWORD=${{ env.MONGO_PASSWORD }} \
-          --from-literal=MONGO_USERNAME=${{ env.MONGO_USERNAME }} \
-          --save-config \
-          --dry-run=client \
-          -o yaml | kubectl apply -f -
-
-      - name: Deploy to Dev ENV
-        run: | 
-          kubectl apply -f kubernetes/production
-
-      - name: Set Ingress URL
-        id: ingress-step
-        run: |
-          APP_URL=$(kubectl get ingress solar-system -o jsonpath='{.spec.rules[*].host}' -n production)
-          echo "APP_URL=$APP_URL" >> "$GITHUB_OUTPUT"
+    uses: .github/workflows/reuse-deployment.yaml
 
   prod-integration-testing:
     if: github.ref == 'refs/heads/main'
