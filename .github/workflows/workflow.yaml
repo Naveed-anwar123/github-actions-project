@@ -173,6 +173,10 @@ jobs:
     secrets: 
       k8s-kubeconfig: ${{ secrets.KUBECONFIG }}
       mongo-db-password: ${{ secrets.MONGO_PASSWORD }}
+    with: # pass inputs to called workflow
+      mongo-db-uri: ${{ vars.MONGO_URI }}
+      environment: development
+      manifest-dir: kubernetes/development/
 
   dev-integration-testing:
     if: contains(github.ref, 'feature/')
@@ -195,7 +199,11 @@ jobs:
     secrets: 
       k8s-kubeconfig: ${{ secrets.KUBECONFIG }}
       mongo-db-password: ${{ secrets.MONGO_PASSWORD }}
-      
+    with: # pass inputs to called workflow
+      mongo-db-uri: ${{ vars.MONGO_URI }}
+      environment: production
+      manifest-dir: kubernetes/production/
+
   prod-integration-testing:
     if: github.ref == 'refs/heads/main'
     name: Prod Integration Testing
