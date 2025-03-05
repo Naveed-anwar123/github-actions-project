@@ -186,7 +186,7 @@ jobs:
     steps:
       - name: Integration Testing of URL
         env:
-          URL: ${{ needs.dev-deploy.outputs.APP_URL }}
+          URL: ${{ needs.dev-deploy.outputs.application-uri }}
         run: | 
           echo $URL
           echo ------------------------------------
@@ -212,7 +212,7 @@ jobs:
     steps:
       - name: Integration Testing of URL
         env:
-          URL: ${{ needs.prod-deploy.outputs.APP_URL }}
+          URL: ${{ needs.prod-deploy.outputs.application-uri }}
         run: | 
           echo $URL
           echo ------------------------------------

@@ -17,6 +17,9 @@ on:
       manifest-dir:
         type: string
         required: true
+    outputs:
+      application-uri:
+        value: ${{ jobs.reuse-deploy.outputs.APP_URL }}
 
 jobs:
   reuse-deploy:  
