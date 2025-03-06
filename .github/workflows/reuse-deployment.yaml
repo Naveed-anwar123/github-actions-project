@@ -18,8 +18,8 @@ on:
         type: string
         required: true
     outputs:
-      application-uri:
-        value: ${{ jobs.reuse-deploy.outputs.APP_URL }}
+      application-uri: # use this name in the calling workflow
+        value: ${{ jobs.reuse-deploy.outputs.APP_URL }} #define outputs from the outputs at the job level
 
 jobs:
   reuse-deploy:  
@@ -28,7 +28,7 @@ jobs:
       name: ${{ inputs.environment }}
       url: https://${{ steps.ingress-step.outputs.APP_URL }}
     outputs:
-      APP_URL: ${{ steps.ingress-step.outputs.APP_URL }}
+      APP_URL: ${{ steps.ingress-step.outputs.APP_URL }} # this APP_URL is stored in $GITHUB_OUTPUT
     steps:
       - name: Repository Checkout # download repo
         uses: actions/checkout@v4 

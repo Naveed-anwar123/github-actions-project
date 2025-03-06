@@ -113,6 +113,33 @@ jobs:
           path: coverage # where the file is present on the runner vm
           retention-days: 5
   
+  reports-s3:
+    name: Store Reports to S3
+    needs: [code-coverage,unit-testing]
+    strategy:
+      matrix:
+        nodejs_version: [18]
+        operating_system: [ubuntu-latest]
+    runs-on: ${{ matrix.operating_system }}    
+    continue-on-error: true        
+    steps:
+      - name: Doanload Mocha Report 
+        uses: actions/download-artifact@v4
+        with:
+          name: Result-${{ matrix.operating_system }}-${{ strategy.job-index }} 
+          
+      - name: Doanload Code-Coverage Report 
+        uses: actions/download-artifact@v4
+        with:
+          name: Code-Coverage-${{ matrix.operating_system }}-${{ strategy.job-index }}
+
+      - name: Merge Reports Into Single Directory
+        run: | 
+          mkdir -p reports-${{ github.sha }}
+          mv Code-Coverage-${{ matrix.operating_system }}-${{ strategy.job-index }} reports-${{ github.sha }}/
+          mv Result-${{ matrix.operating_system }}-${{ strategy.job-index }} reports-${{ github.sha }}/
+          ls -ltrh reports-${{ github.sha }}/
+
   docker:
     name: Containerization job
     runs-on: ubuntu-latest
@@ -218,4 +245,4 @@ jobs:
           echo ------------------------------------
           curl https://$URL/live -s -k | jq -r .status | grep -i live 
 
-
+  
