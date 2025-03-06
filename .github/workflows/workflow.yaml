@@ -145,7 +145,7 @@ jobs:
       - name: Upload files to s3
         uses: jakejarvis/s3-sync-action@master
         with:
-          args: --acl public-read --follow-symlinks --delete
+          args: --acl public-read --follow-symlinks --delete 
         env:
           AWS_S3_BUCKET: github-actions-bucket-for-nodejs
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
