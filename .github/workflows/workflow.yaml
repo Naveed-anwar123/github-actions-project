@@ -123,25 +123,25 @@ jobs:
     runs-on: ${{ matrix.operating_system }}    
     continue-on-error: true        
     steps:
+      - name: Create Directory for Reports
+        run: | 
+          mkdir -p reports-${{ github.sha }}
+
       - name: Doanload Mocha Report 
         uses: actions/download-artifact@v4
         with:
           name: Result-${{ github.sha }} 
+          path: reports-${{ github.sha }}/
 
       - name: Doanload Code-Coverage Report 
         uses: actions/download-artifact@v4
         with:
           name: Code-Coverage-${{ github.sha }}
-      
-      - name: List downloaded files
-        run:  ls -ltrh
+          path: reports-${{ github.sha }}/
 
-      - name: Merge Reports Into Single Directory
-        run: | 
-          mkdir -p reports-${{ github.sha }}
-          mv Code-Coverage-${{ github.sha }} reports-${{ github.sha }}/
-          mv Result-${{ github.sha }} reports-${{ github.sha }}/
-          ls -ltrh reports-${{ github.sha }}/
+      - name: List downloaded files
+        run:  ls -ltrh reports-${{ github.sha }}/
+
 
   docker:
     name: Containerization job
