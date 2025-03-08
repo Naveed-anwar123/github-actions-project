@@ -1,0 +1,18 @@
+on:
+  pull_request: 
+    types:
+      - opened
+
+jobs:
+  post-comment-pr:
+    runs-on: ubuntu-latest
+    permissions: # remember while troubleshooting
+      issues: write
+      pull-requests: write
+    steps:
+
+    - name: Post PR Comment
+      uses: Naveed-anwar123/gh-custom-docker-action@main # should point to the owner/repo@branch
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }} # by default this token is added and has read permissins by default
+        giphy-api-key: ${{ secrets.GIPHY_API_KEY }} # add it as secret
