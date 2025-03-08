@@ -40,14 +40,11 @@ jobs:
         with:
           node-version: ${{ matrix.nodejs_version }}
       
-      - name: Cache Node Dependencies
-        uses: actions/cache@v3
+      - name: Composite Action - Cache and Install packages
+        uses: ./.github/custom-actions/npm-action/action.yaml
         with:
-          path: node_modules # where the dependencies are installed
-          key: ${{runner.os}}-node-modules-${{hashFiles('package-lock.json')}} # unique key to create and load cache
-          
-      - name: Install dependencies # install dependecies
-        run: npm install
+          path: node_modules
+          command: npm install
 
       - name: Run Tests # run the unit tests
         id: nodejs_unit_test_id # give a unique id id
@@ -93,14 +90,11 @@ jobs:
       #   with:
       #     node-version: 18
       
-      - name: Cache Node Dependencies
-        uses: actions/cache@v3
+      - name: Composite Action - Cache and Install packages
+        uses: ./.github/custom-actions/npm-action/action.yaml
         with:
-          path: node_modules # where the dependencies are installed
-          key: ${{runner.os}}-node-modules-${{hashFiles('package-lock.json')}} # unique key to create and load cache
-          
-      - name: Install dependencies # install dependecies
-        run: npm install
+          path: node_modules
+          command: npm install
 
       - name: Run Coverage # run the unit tests
         run: npm run coverage
