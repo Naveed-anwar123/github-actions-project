@@ -40,14 +40,11 @@ jobs:
         with:
           node-version: ${{ matrix.nodejs_version }}
       
-      - name: Cache Node Dependencies
-        uses: actions/cache@v3
+      - name: Composite Action - Cache and Install packages
+        uses: ./.github/custom-actions/npm-action
         with:
-          path: node_modules # where the dependencies are installed
-          key: ${{runner.os}}-node-modules-${{hashFiles('package-lock.json')}} # unique key to create and load cache
-          
-      - name: Install dependencies # install dependecies
-        run: npm install
+          path: node_modules
+          command: npm install
 
       - name: Run Tests # run the unit tests
         id: nodejs_unit_test_id # give a unique id id
@@ -55,12 +52,12 @@ jobs:
           npm test
           ls -ltrh
 
-      - name: Archive test result for ${{ matrix.operating_system }}-${{ strategy.job-index }}
+      - name: Archive test result for ${{ github.sha }}
         #if: failure() && (steps.nodejs_unit_test_id.outcome == 'failure' || steps.nodejs_unit_test_id.outcome == 'success')
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: Result-${{ matrix.operating_system }}-${{ strategy.job-index }} # to generate random names
+          name: Result-${{ github.sha }} # to generate random names
           path: test-results.xml # where the file is present on the runner vm
 
   code-coverage: 
@@ -93,14 +90,11 @@ jobs:
       #   with:
       #     node-version: 18
       
-      - name: Cache Node Dependencies
-        uses: actions/cache@v3
+      - name: Composite Action - Cache and Install packages
+        uses: ./.github/custom-actions/npm-action
         with:
-          path: node_modules # where the dependencies are installed
-          key: ${{runner.os}}-node-modules-${{hashFiles('package-lock.json')}} # unique key to create and load cache
-          
-      - name: Install dependencies # install dependecies
-        run: npm install
+          path: node_modules
+          command: npm install
 
       - name: Run Coverage # run the unit tests
         run: npm run coverage
@@ -109,10 +103,51 @@ jobs:
       - name: Code Coverage Results
         uses: actions/upload-artifact@v4
         with:
-          name: Code-Coverage-${{ matrix.operating_system }}-${{ strategy.job-index }} # to generate random names
+          name: Code-Coverage-${{ github.sha }} # to generate random names
           path: coverage # where the file is present on the runner vm
           retention-days: 5
   
+  reports-s3:
+    name: Store Reports to S3
+    needs: [code-coverage,unit-testing]
+    strategy:
+      matrix:
+        nodejs_version: [18]
+        operating_system: [ubuntu-latest]
+    runs-on: ${{ matrix.operating_system }}    
+    continue-on-error: true        
+    steps:
+      - name: Create Directory for Reports
+        run: | 
+          mkdir -p reports-${{ github.sha }}
+
+      - name: Doanload Mocha Report 
+        uses: actions/download-artifact@v4
+        with:
+          name: Result-${{ github.sha }} 
+          path: reports-${{ github.sha }}/
+
+      - name: Doanload Code-Coverage Report 
+        uses: actions/download-artifact@v4
+        with:
+          name: Code-Coverage-${{ github.sha }}
+          path: reports-${{ github.sha }}/
+
+      - name: List downloaded files
+        run:  ls -ltrh reports-${{ github.sha }}/
+      
+      - name: Upload files to s3
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --acl public-read --follow-symlinks --delete 
+        env:
+          AWS_S3_BUCKET: github-actions-bucket-for-nodejs
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: 'us-east-1'  
+          SOURCE_DIR: reports-${{ github.sha }}
+          DEST_DIR: 'public-artifacts'
+
   docker:
     name: Containerization job
     runs-on: ubuntu-latest
@@ -218,4 +253,4 @@ jobs:
           echo ------------------------------------
           curl https://$URL/live -s -k | jq -r .status | grep -i live 
 
-
+  

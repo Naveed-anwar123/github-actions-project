@@ -1,0 +1,21 @@
+name: NPM Action
+description: Composite action for installing npm and caching depedencies
+inputs:
+  path:
+    description: Path of the folder
+    required: true
+  command:
+    description: Command to install
+    required: true
+runs:
+  using: composite
+  steps:
+      - name: Cache Node Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ inputs.path }}
+          key: ${{runner.os}}-node-modules-${{hashFiles('package-lock.json')}} # unique key to create and load cache
+          
+      - name: Install dependencies # install dependecies
+        run: ${{ inputs.command }}
+        shell: bash # mandatory for run, not for uses
