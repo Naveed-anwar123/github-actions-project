@@ -12,7 +12,7 @@ jobs:
     steps:
 
     - name: Post PR Comment
-      uses: Naveed-anwar123/gh-custom-docker-action@main # should point to the owner/repo@branch
+      uses: Naveed-anwar123/xx@main # should point to the owner/repo@branch
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }} # by default this token is added and has read permissins by default
         giphy-api-key: ${{ secrets.GIPHY_API_KEY }} # add it as secret

@@ -8,7 +8,7 @@ inputs:
     description: Command to install
     required: true
 runs:
-  using: composite
+  using: composite # mandatory for composite action
   steps:
       - name: Cache Node Dependencies
         uses: actions/cache@v3

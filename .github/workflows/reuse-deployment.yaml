@@ -1,7 +1,7 @@
 name: Reuseable Deployment
 
 on:
-  workflow_call:
+  workflow_call: # When the main workflow is calling this callable or re-usable workflow.
     secrets:
       k8s-kubeconfig:
         required: true
@@ -38,6 +38,7 @@ jobs:
         with:
           version: 'v1.26.0'
         id: install
+        
       - name: Set kubeconfig
         uses: azure/k8s-set-context@v4
         with:
